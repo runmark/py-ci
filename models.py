@@ -9,6 +9,16 @@ class Project:
         self.processing = False
         self.build_results = []
 
+    @property
+    def id(self) -> str:
+        return self.config["id"]
+
+    def end_build(self, result):
+        self.current_commit = self.pending_commit
+        self.pending_commit = None
+        self.processing = False
+        self.build_results.append(result)
+
 
 class BuildResult:
     def __init__(self):
@@ -21,11 +31,18 @@ class BuildResult:
         self.end_time = None
         self.tasks = []
 
+    def fail(self, e: Exception):
+        self.success = False
+        self.error = str(e)
+
+    def finish(self):
+        self.end_time = datetime.now()
+
 
 class TaskResult:
     def __init__(self, fmt=None, content=None):
         self.success = True
-        self.type = type
+        self.type = None
         self.format = fmt
         self.content = content
 
@@ -33,3 +50,6 @@ class TaskResult:
 class Database:
     def __init__(self, config):
         self.projects = [Project(x) for x in config["projects"]]
+
+    def find_project(self, project_id: str):
+        return [p for p in self.projects if p.id == project_id]
