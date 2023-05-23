@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title>Continuous Integration Server</title>
+    <style type="text/css">
+        .text-center {
+            text-align: center;
+        }
+
+        .build-success {
+            background: #9f9;
+        }
+
+        .build-fail {
+            background: #f99;
+        }
+    </style>
+</head>
+
+<body>
+    <h1 class="text-center">Continuous Integration Server</h1>
+    {% for project in projects %}
+    <h2 class="text-center">Project: {{ project.id }}</h2>
+    {% if project.build_results %}
+    {% set result = project.build_results[-1] %}
+    <div class="{{ 'build-success' if result.success else 'build-fail' }}">
+        <h3>Build: On {{ result.agent_id }} in {{ result.time_range() }}</h3>
+        {% for task_result in result.tasks %}
+        <h4>Task: {{ task_result.type }}</h4>
+        <div>
+            {{ render_task_result(task_result) | safe }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% endfor %}
+</body>
+
+</html>

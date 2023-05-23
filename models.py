@@ -53,3 +53,19 @@ class Database:
 
     def find_project(self, project_id: str):
         return [p for p in self.projects if p.id == project_id]
+
+
+class LintIssue:
+    def __init__(self, filename, line, column, name, description):
+        self.filename = filename
+        self.line = line
+        self.column = column
+        self.name = name
+        self.description = description
+
+
+class UnitTestResult:
+    def __init__(self):
+        self.pass_count = 0
+        self.fail_count = 0
+        self.error_count = 0

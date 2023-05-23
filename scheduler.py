@@ -3,7 +3,7 @@ import random
 from threading import Thread
 
 from agent import Agent
-from models import BuildResult, Project
+from models import BuildResult, Database, Project
 
 import multiprocessing as mp
 import vcs
@@ -13,7 +13,7 @@ class Scheduler(Thread):
     def __init__(self, config, db):
         super().__init__()
         self._config = config
-        self.db = db
+        self.db: Database = db
         self.agents = [self.start_agent(c) for c in config["agents"]]
 
     def start_agent(self, config):
@@ -21,6 +21,11 @@ class Scheduler(Thread):
         p = mp.Process(target=agent, daemon=True)
         p.start()
         return agent
+
+    def run(self):
+        while True:
+            for project in self.db.projects:
+                self.detect_change(project)
 
     def detect_change(self, project: Project):
         if project.processing:
